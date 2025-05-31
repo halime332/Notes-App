@@ -8,3 +8,7 @@
   height: 100%;
   margin-top: 6px;
 }
+a {
+  color: white;
+  text-decoration: none;
+}

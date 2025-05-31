@@ -1,24 +1,23 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
 
 
- export interface Tag{
-    label:string;
-    value:string;
-}
-
+ 
 interface TagsState{
-    notes:Tag[];
+    tags:string[];
 }
 
 const initialState:TagsState={
-    notes:[],
+    tags:[],
 };
 
 const tagsSlice =createSlice({
-    name:"notes",
+    name:"tags",
     initialState,
     reducers:{
-      addTag:()=>{},
+      addTag:(state,action:PayloadAction<string>)=>{
+        if(state.tags.includes(action.payload)) return;
+        state.tags.push(action.payload);
+      },
     },
 });
 

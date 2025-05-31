@@ -1,9 +1,11 @@
-import { Button, Grid,  Stack,  styled,  TextField } from "@mui/material";
+import { Button, Grid,  Stack,  styled,  TextField  } from "@mui/material";
 import { useState, type FormEvent } from "react";
-import {v4} from "uuid";
-import { addTag, type Tag } from "../../redux/slices/tagsSlice";
+import { addTag} from "../../redux/slices/tagsSlice";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../redux/store";
+import TagSelect from "./tag-select";
+import type { NoteData } from "../../types";
+import { Link } from "react-router-dom";
 
 
 
@@ -12,41 +14,55 @@ const Label =styled("label")`
  
 `;
  
+interface Props{
+  handleSubmit:(data:NoteData) =>void;
+}
 
-const Form = () => {
+const Form = ({handleSubmit}:Props) => {
   const dispatch =useDispatch<AppDispatch>();
   const [title,setTitle]=useState<string>("");
   const [markdown ,setMarkdown]=useState<string>("");
-  const [selectedTags,setSelectedTags]=useState<Tag[]>([]);
-  const [newTag,setNewTag]= useState<string>("");
+  const [selectedTags,setSelectedTags]=useState<string[]>([]);
+  
   
 
 
   //form gönderilince
-   const handleSubmit =(e:FormEvent<HTMLFormElement>) =>{
+   const handleForm =(e:FormEvent<HTMLFormElement>) =>{
     e.preventDefault();
+
+    handleSubmit({title,markdown, tags:selectedTags});
     console.log(title);
     console.log(markdown);
     console.log(selectedTags);
    };
 
    //yeni etiket ekleme butonuna tıklayınca
-   const handleAddTag =()=>{
+   const handleAddTag =(newTag:string)=>{
      if(newTag.trim()=== "") return;
-     const newTagObj = {label:newTag, value:v4()};
+     if(newTag.trim().length>6) return;
+     if(selectedTags.length===5) return;
+     if(selectedTags.some((t)=>t===newTag)) return;
+
+     
      //@ts-ignore
-     dispatch(addTag(newTagObj));
-     setSelectedTags([...selectedTags,newTagObj]);
-     setNewTag("");
+     dispatch(addTag(newTag));
+     setSelectedTags([...selectedTags,newTag]);
+     
     
+  };
+
+  //seçilen etiketi kaldır
+  const handleDeleteTag=(value:string)=>{
+    setSelectedTags((prev)=>prev.filter((t)=>t!==value));
   };
 
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleForm}>
       <Stack spacing={7}>
         <Grid container spacing={5} sx={{marginTop:"30px"}}>
-        <Grid size={6}>
+          <Grid size={6}>
             <TextField  label= "Başlık" 
             color="primary"
             variant="outlined"
@@ -56,19 +72,10 @@ const Form = () => {
            />
         </Grid>
 
-
+       
         <Grid size={6}>
-        <Stack direction="row" alignItems="center">
-         <TextField label="Etiket" variant="outlined"
-          fullWidth onChange={(e)=>setNewTag(e.target.value)} value={newTag}/>    
-         <Button variant="contained" 
-         sx={{padding:"10px", 
-         fontSize:"18px"}} onClick={handleAddTag}>+</Button>
-        </Stack>  
-
-        <Box display="flex">
-          {selectedTags.map((tag)=>(<Chip label={tag.label} />))}
-          </Box> 
+           <TagSelect handleAddTag={handleAddTag}  
+           selectedTags={selectedTags} handleDeleteTag={handleDeleteTag}/>
         </Grid>
       </Grid>
 
@@ -84,7 +91,14 @@ const Form = () => {
       </Stack>
 
       <Stack direction="row" justifyContent="end" spacing={5}>
-        <Button type="button" variant="contained" color="secondary" sx={{minWidth:"100px"}}>Geri</Button>
+        <Button type="button"
+        component={Link} to=".."
+         variant="contained"
+          color="secondary" 
+          sx={{minWidth:"100px"}}
+          >
+            Geri
+          </Button>
         <Button type="submit" variant="contained" sx={{minWidth:"100px"}} >Kaydet</Button>
       </Stack>
       </Stack>

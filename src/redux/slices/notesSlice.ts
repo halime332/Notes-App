@@ -1,10 +1,12 @@
-import {createSlice} from "@reduxjs/toolkit";
+import {createSlice, type PayloadAction} from "@reduxjs/toolkit";
+import type { NoteData } from "../../types";
+import {v4} from "uuid";
 
 
-interface Note{
+export interface Note{
     id:string;
     title:string;
-    markdownd:string;
+    markdown:string;
     tags:string[];
 
 }
@@ -20,7 +22,10 @@ const notesSlice =createSlice({
     name:"notes",
     initialState,
     reducers:{
-        addNote:() =>{},
+        addNote:(state, action:PayloadAction<NoteData>) =>{
+         const newNote: Note={...action.payload,id:v4()};
+         state.notes.push(newNote);
+        },
         updateNote:()=>{},
         deleteNote:()=>{},
     },
