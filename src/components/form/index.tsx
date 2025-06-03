@@ -1,11 +1,12 @@
 import { Button, Grid,  Stack,  styled,  TextField  } from "@mui/material";
-import { useState, type FormEvent } from "react";
+import { useState, type FormEvent, type MouseEvent } from "react";
 import { addTag} from "../../redux/slices/tagsSlice";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../redux/store";
 import TagSelect from "./tag-select";
 import type { NoteData } from "../../types";
 import { Link } from "react-router-dom";
+import type { Note } from "../../redux/slices/notesSlice";
 
 
 
@@ -15,21 +16,29 @@ const Label =styled("label")`
 `;
  
 interface Props{
+  note?:Note;
   handleSubmit:(data:NoteData) =>void;
 }
 
-const Form = ({handleSubmit}:Props) => {
+const Form = ({note ,handleSubmit}:Props) => {
   const dispatch =useDispatch<AppDispatch>();
-  const [title,setTitle]=useState<string>("");
-  const [markdown ,setMarkdown]=useState<string>("");
-  const [selectedTags,setSelectedTags]=useState<string[]>([]);
+  const [title,setTitle]=useState<string>(note?.title || "");
+  const [markdown ,setMarkdown]=useState<string>( note?.markdown || "");
+  const [selectedTags,setSelectedTags]=useState<string[]>(note?.tags ||[]);
   
   
 
 
   //form gönderilince
-   const handleForm =(e:FormEvent<HTMLFormElement>) =>{
+   const handleForm =(e:MouseEvent<HTMLButtonElement>) =>{
     e.preventDefault();
+
+    
+   
+
+    if(!title || !markdown || selectedTags.length < 1){
+      alert("Lütfen not içeriğini giriniz");
+    }
 
     handleSubmit({title,markdown, tags:selectedTags});
     console.log(title);
@@ -59,13 +68,14 @@ const Form = ({handleSubmit}:Props) => {
 
 
   return (
-    <form onSubmit={handleForm}>
+    <form >
       <Stack spacing={7}>
         <Grid container spacing={5} sx={{marginTop:"30px"}}>
           <Grid size={6}>
             <TextField  label= "Başlık" 
             color="primary"
             variant="outlined"
+            value={title}
             focused
             fullWidth
             onChange={(e)=>setTitle(e.target.value)}
@@ -84,6 +94,7 @@ const Form = ({handleSubmit}:Props) => {
         <Label>İçerik(markdown destekler )</Label>
         < TextField multiline
          fullWidth
+         value={markdown}
          minRows={15}
          maxRows={100}
          onChange={(e)=>setMarkdown(e.target.value)}
@@ -99,7 +110,7 @@ const Form = ({handleSubmit}:Props) => {
           >
             Geri
           </Button>
-        <Button type="submit" variant="contained" sx={{minWidth:"100px"}} >Kaydet</Button>
+        <Button onClick={handleForm} variant="contained" sx={{minWidth:"100px"}} >Kaydet</Button>
       </Stack>
       </Stack>
     </form>

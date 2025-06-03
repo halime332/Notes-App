@@ -26,6 +26,12 @@ const TagSelect = ({selectedTags ,handleAddTag,handleDeleteTag}:Props) => {
           onChange={(e,tag)=>{handleAddTag(tag as string);
             setNewTag(null);
           }}
+          onKeyDown={(e)=>{
+            if(e.key === "Enter") {
+              handleAddTag(newTag as string);
+            setNewTag(null);
+            }
+          }}
           
            renderInput={(params) => (
             <TextField 
@@ -34,6 +40,7 @@ const TagSelect = ({selectedTags ,handleAddTag,handleDeleteTag}:Props) => {
             onChange={(e)=>{
               setNewTag(e.target.value)}} />
            )}
+           
           />    
          <Button variant="contained" 
            sx={{padding:"10px 0", 

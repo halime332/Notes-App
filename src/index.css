@@ -12,3 +12,6 @@ a {
   color: white;
   text-decoration: none;
 }
+.markdown {
+  white-space: pre-wrap;
+}
