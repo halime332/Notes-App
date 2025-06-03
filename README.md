@@ -9,3 +9,5 @@
 -@mui/material @emotion/react @emotion/styled
 -react-redux
 -@types/react-redux
+
+<img src="screen.gif"/>

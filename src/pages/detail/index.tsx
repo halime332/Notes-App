@@ -33,7 +33,7 @@ const Detail:FC = () => {
           </Stack>
 
           <Box marginY={4}>
-            <ReactMarkdown   className="markdown" >{note.markdown}</ReactMarkdown>
+            <ReactMarkdown    >{note.markdown}</ReactMarkdown>
           </Box>
         </Box>
 
